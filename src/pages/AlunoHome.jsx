@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { api } from "../utils/api";
 
 const AlunoHome = () => {
+    const backendUrl = import.meta.env.VITE_API_URL;
     const [nome, setNome] = useState("");
     const [reservas, setReservas] = useState([]);
     const [usuario, setUsuario] = useState(null);
@@ -160,8 +161,8 @@ const AlunoHome = () => {
                                 usuario?.foto
                                     ? usuario.foto.startsWith("http")
                                         ? usuario.foto
-                                        : `http://localhost:3000${usuario.foto}`
-                                    : "http://localhost:3000/uploads/default.png"
+                                        : `${backendUrl}${usuario.foto}`
+                                    : `${backendUrl}/uploads/default.png`
                             }
                             style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         />
