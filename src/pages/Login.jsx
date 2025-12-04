@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { api } from "../utils/api";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -16,21 +16,16 @@ const Login = () => {
         setMensagem("");
 
         try {
-            const response = await fetch("http://localhost:3000/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, senha }),
+            const response = await api.post("/login", {
+                email, senha
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setErro(data.erro || "Email ou senhas incorretos.");
-                return;
-            }
+            const data = response.data;
 
             localStorage.setItem("token", data.token);
             localStorage.setItem("usuario", JSON.stringify(data.usuario));
+
+            toast.success("Login realizado!");
 
             if (data.usuario.tipo === "aluno") {
                 navigate("/aluno");
@@ -40,11 +35,14 @@ const Login = () => {
                 setErro("Tipo de usuário inválido.");
             }
 
-
-
         } catch (err) {
-            toast.error("Erro de conexão:", err);
-            setMensagem("Erro ao conectar com o servidor.");
+            console.error(err);
+            if(err.response?.data?.erro){
+                setErro(err.response.data.erro);
+            } else {
+                setErro("Erro ao conectar ao servidor.");
+            }
+            toast.error("Falha no login.");
         }
     };
 

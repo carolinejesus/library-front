@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { api } from "../utils/api";
 
 const Usuarios = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -22,27 +23,21 @@ const Usuarios = () => {
     });
 
     const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
-    const token = localStorage.getItem("token");
+
 
     const listaUsuarios = async () => {
         try {
             const token = localStorage.getItem("token");
 
-            const response = await fetch("http://localhost:3000/usuarios", {
+            const response = await api.get("/usuarios", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setErro(data.erro || "Erro ao carregar usuários."); return;
-            }
-
-            setUsuarios(data);
+            setUsuarios(response.data);
 
         } catch (error) {
             console.error("Erro:", error);
-            setErro("Erro ao conectar com o servidor.");
+            setErro("Erro ao carregar usuários.");
         }
     };
 
@@ -78,33 +73,27 @@ const Usuarios = () => {
         e.preventDefault();
 
         try {
-            const metodo = modoEdicao ? "PUT" : "POST";
-            const url = modoEdicao
-                ? `http://localhost:3000/usuarios/${form.id}`
-                : "http://localhost:3000/usuarios";
+            const token = localStorage.getItem("token");
+            if(modoEdicao){
+                const body = {
+                    nome: form.nome,
+                    email: form.email
+                };
 
-            const body = { ...form };
-            if (modoEdicao) {
-                delete body.senha; //nao pode adicionar senha
-                delete body.tipo;
-            }
-            const response = await fetch(url, {
-                method: metodo,
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                body: JSON.stringify(body)
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                toast.error("Erro ao salvar usuário."); return;
+                await api.put(`/usuarios/${form.id}`, body, {
+                    headers: { Authorization: `Bearer ${token}`}
+                });
+                toast.success("Usuário atualizado com sucesso!");
+            } else {
+                await api.post("/usuarios", form, {
+                    headers: { Authorization: `Bearer ${token}`}
+                });
+                toast.success("Usuário cadastrado com sucesso!");
             }
 
-            toast.success(modoEdicao
-                ? "Usuário editado com sucesso!"
-                : "Usuário cadastrado com sucesso!");
             setMostrarModal(false);
-            await listaUsuarios();
+            listaUsuarios();
+
         } catch (err) {
             console.error(err);
             toast.error("Erro ao salvar usuário.");
@@ -116,15 +105,12 @@ const Usuarios = () => {
             try {
                 const token = localStorage.getItem("token");
 
-                await fetch(`http://localhost:3000/usuarios/${id}`, {
-                    method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                await api.delete(`/usuarios/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
                 toast.success("Usuário excluído com sucesso!");
-                await listaUsuarios();
+                listaUsuarios();
 
             } catch (error) {
                 console.error(error);

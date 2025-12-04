@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { api } from "../utils/api";
 
 const FuncionarioHome = () => {
     const [nome, setNome] = useState("");
@@ -28,22 +29,16 @@ const FuncionarioHome = () => {
         const formData = new FormData();
         formData.append("foto", file);
         try {
-            const response = await fetch(
-                `http://localhost:3000/usuarios/${usuarioLocal.id}/foto`,
-                {
-                    method: "PUT",
-                    headers: { Authorization: `Bearer ${token}` },
-                    body: formData,
-                }
+            const { data } = await api.put(
+                `/usuarios/${usuarioLocal.id}/foto`,
+                formData,
+                { headers: { Authorization: `Bearer ${token}`}}
             );
-            const data = await response.json();
-            if (!response.ok) {
-                toast.error(data.error || "Erro ao salvar imagem");
-                return;
-            }
+
             const novoUsuario = { ...usuarioLocal, foto: data.foto };
             setUsuario(novoUsuario);
             localStorage.setItem("usuario", JSON.stringify(novoUsuario));
+
             setFile(null);
             setPreview(null);
             setShowModal(false);
@@ -57,12 +52,15 @@ const FuncionarioHome = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) { navigate("/"); return; }
+
         const usuarioLocal = JSON.parse(localStorage.getItem("usuario"));
         if (!usuarioLocal) return;
-        fetch(`http://localhost:3000/usuarios/${usuarioLocal.id}`, {
+
+        api.get(`/usuarios/${usuarioLocal.id}`, {
             headers: { Authorization: `Bearer ${token}` }
-        }).then(res => res.json()).then(data => {
-            console.log("USUARIO FETCH:", data);
+        }).then(res => {
+            const data = res.data;
+            console.log("Usuario Fetch:", data);
             setUsuario(data);
             setNome(data.nome);
             localStorage.setItem("usuario", JSON.stringify(data));
@@ -74,26 +72,15 @@ const FuncionarioHome = () => {
 
     const listaReservas = async (token) => {
         try {
-            const response = await fetch("http://localhost:3000/reservas", {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token,
-                }
+            const { data } = await api.get("/reservas", {
+                headers: { "Authorization": "Bearer " + token }
             });
-
-            if (!response.ok) {
-                console.error("Erro na requisição: ", response.status);
-                setReservas([]);
-                if (response.status === 401) sair();
-                return;
-            }
-
-            const data = await response.json();
-            setReservas(data);
+            setReservas(data);         
 
         } catch (err) {
+            if (err.response?.status === 401) sair();
             toast.error("Erro ao carregar reservas.", err);
+            setReservas([])
         }
     };
 
@@ -101,24 +88,13 @@ const FuncionarioHome = () => {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch(`http://localhost:3000/reservas/${idReserva}/finalizar`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({ status: "Entregue." })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                toast.error(data.error || "Erro ao finalizar reserva.");
-                return;
-            }
-
+            await api.put(`/reservas/${idReserva}/finalizar`,
+                { status: "Entregue." },
+                 {headers: { "Authorization": "Bearer " + token } }
+            );
             toast.success("Reserva finalizada com sucesso!");
             listaReservas(token);
+            
         } catch (err) {
             console.error("Erro ao carregar reservas.", err);
         }
@@ -128,41 +104,25 @@ const FuncionarioHome = () => {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch(`http://localhost:3000/reservas/${idReserva}/cancelar`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({ status: "cancelada" })
-            });
-
-            const data = await response.json();
-            if (!response.ok) { toast.error(data.error || "Erro ao cancelar reserva."); return; }
+            await api.put(`/reservas/${idReserva}/cancelar`, 
+                { status: "cancelada" },
+                { headers: { "Authorization": "Bearer " + token }, }
+            );
 
             toast.success("Reserva cancelada com sucesso!");
             listaReservas(token);
-        } catch (err) { toast.error("Erro ao cancelar reserva."); }
+        } catch (err) { 
+            toast.error("Erro ao cancelar reserva."); 
+        }
     };
 
     const excluirReserva = async (idReserva) => {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch(`http://localhost:3000/reservas/${idReserva}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                toast.error(data.error || "Erro ao excluir reserva.");
-                return;
-            }
+            await api.delete(`/reservas/${idReserva}`, {
+                headers: { "Authorization": "Bearer " + token }, }
+            );
 
             toast.success("Reserva excluida com sucesso!");
             listaReservas(token);

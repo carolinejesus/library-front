@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { api } from "../utils/api";
 
 const Catalogo = () => {
     const [livros, setLivros] = useState([]);
@@ -12,14 +13,8 @@ const Catalogo = () => {
 
     const carregarLivros = async () => {
         try {
-            const response = await fetch("http://localhost:3000/livros");
-            if (!response.ok) {
-                console.error("Erro ao carregar livros.");
-                return;
-            }
-
-            const data = await response.json();
-            setLivros(data);
+            const response = await api.get("/livros");
+            setLivros(response.data);
         } catch (err) {
             console.error("Erro na requisição de livros.", err);
         }
@@ -33,17 +28,11 @@ const Catalogo = () => {
     const verDetalhes = async (id) => {
         const token = localStorage.getItem("token");
 
-        const response = await fetch(`http://localhost:3000/livros/${id}`, {
-            headers: {
-                Authorization: "Bearer " + token
-            }
+        const response = await api.get(`/livros/${id}`, {
+            headers: { Authorization: "Bearer " + token }
         });
 
-        const data = await response.json();
-
-        if (response.ok) {
-            setDetalhes(data);  
-        }
+        setDetalhes(response.data);  
     };
 
     const reservarLivro = async (idLivro) => {
@@ -67,21 +56,9 @@ const Catalogo = () => {
         };
 
         try {
-            const response = await fetch("http://localhost:3000/reservas", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token
-                },
-                body: JSON.stringify(reserva)
+            await api.post("/reservas", reserva, {
+                headers: { Authorization: "Bearer " + token },
             });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                toast.error("Você já possui uma reserva deste livro.");
-                return;
-            }
 
             toast.success("Livro reservado com sucesso!");
             setDetalhes(null);

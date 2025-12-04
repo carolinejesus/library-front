@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { api } from "../utils/api";
 
 const Livros = () => {
     const [livros, setLivros] = useState([]);
@@ -25,19 +26,12 @@ const Livros = () => {
         try {
             const token = localStorage.getItem("token");
 
-            const response = await fetch("http://localhost:3000/livros", {
+            const { data } = await api.get("/livros", {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                toast.error(data.erro || "Erro ao carregar livros.");
-                return;
-            }
-
-
             setLivros(data);
+
         } catch (error) {
             console.error("Erro:", error);
             toast.error("Erro ao conectar com servidor.");
@@ -70,31 +64,19 @@ const Livros = () => {
 
     const salvarLivro = async () => {
         const token = localStorage.getItem("token");
-        const method = modoEdicao ? "PUT" : "POST";
-        const url = modoEdicao
-            ? `http://localhost:3000/livros/${form.id}`
-            : `http://localhost:3000/livros`;
 
         try {
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: "Bearer " + token,
-                },
-                body: JSON.stringify(form),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                toast.error(data.erro || "Erro ao salvar livro.");
-                return;
+            if (modoEdicao) {
+                await api.put(`/livros/${form.id}`, form, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                toast.success("Livro atualizado com sucesso!");
+            } else {
+                await api.post("/livros", form, {
+                    headers: { Authorization: `Baerer ${token}` }
+                });
+                toast.success("Livro adicionado com sucesso!")
             }
-
-            toast.success(modoEdicao ? "Livro atualizado com sucesso!"
-                : "Livro cadastrado com sucesso!");
-
             setShowModal(false);
             listaLivros();
 
@@ -109,18 +91,13 @@ const Livros = () => {
             try {
                 const token = localStorage.getItem("token");
 
-                const response = await fetch(`http://localhost:3000/livros/${id}`, {
-                    method: "DELETE",
+                await api.delete(`/livros/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                if (!response.ok) {
-                    toast.error("Erro ao excluir livro.");
-                    return;
-                }
-
                 toast.success("Livro excluído com sucesso!");
                 listaLivros();
+                
             } catch (err) {
                 console.error(err);
                 toast.error("Erro ao salvar livro.");

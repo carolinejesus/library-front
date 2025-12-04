@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { api } from "../utils/api";
 
 const AlunoHome = () => {
     const [nome, setNome] = useState("");
@@ -28,22 +29,16 @@ const AlunoHome = () => {
         const formData = new FormData();
         formData.append("foto", file);
         try {
-            const response = await fetch(
-                `http://localhost:3000/usuarios/${usuarioLocal.id}/foto`,
-                {
-                    method: "PUT",
-                    headers: { Authorization: `Bearer ${token}` },
-                    body: formData,
-                }
+            const { data } = await api.put(
+                `/usuarios/${usuarioLocal.id}/foto`,
+                formData,
+                { headers: { Authorization: `Bearer ${token}` }, }
             );
-            const data = await response.json();
-            if (!response.ok) {
-                toast.error(data.error || "Erro ao salvar imagem");
-                return;
-            }
+
             const novoUsuario = { ...usuarioLocal, foto: data.foto };
             setUsuario(novoUsuario);
             localStorage.setItem("usuario", JSON.stringify(novoUsuario));
+
             setFile(null);
             setPreview(null);
             setShowModal(false);
@@ -57,11 +52,15 @@ const AlunoHome = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) { navigate("/"); return; }
+
         const usuarioLocal = JSON.parse(localStorage.getItem("usuario"));
         if (!usuarioLocal) return;
-        fetch(`http://localhost:3000/usuarios/${usuarioLocal.id}`, {
+
+        api.get(`/usuarios/${usuarioLocal.id}`, {
             headers: { Authorization: `Bearer ${token}` }
-        }).then(res => res.json()).then(data => {
+        }).then(res => {
+            const data = res.data;
+            console.log("Usuário Fetch:", data);
             setUsuario(data);
             setNome(data.nome);
             localStorage.setItem("usuario", JSON.stringify(data));
@@ -75,24 +74,15 @@ const AlunoHome = () => {
         const usuarioLocal = JSON.parse(localStorage.getItem("usuario"));
         if (!usuarioLocal) return;
         try {
-            const response = await fetch(`http://localhost:3000/reservas/usuario/${usuarioLocal.id}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                }
+            const response = await api.get(`/reservas/usuario/${usuarioLocal.id}`, {
+                headers: { "Authorization": "Bearer " + token }
             });
 
-            if (!response.ok) {
-                console.error("Erro na requisição: ", response.status);
-                setReservas([]); return;
-            }
-
-            const data = await response.json();
-            setReservas(data);
+            setReservas(response.data);
 
         } catch (err) {
             console.error("Erro ao carregar reservas.", err);
+            setReservas([]);
         }
     };
 
@@ -100,17 +90,10 @@ const AlunoHome = () => {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch(`http://localhost:3000/reservas/${idReserva}/cancelar`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({ status: "cancelada" })
-            });
-
-            const data = await response.json();
-            if (!response.ok) { toast.error(data.error || "Erro ao cancelar reserva."); return; }
+            await api.put(`/reservas/${idReserva}/cancelar`,
+                { status: "cancelada" },
+                { headers: { "Authorization": "Bearer "+ token},}
+            );
 
             toast.success("Reserva cancelada com sucesso!");
             listaReservas(token);
@@ -121,19 +104,9 @@ const AlunoHome = () => {
         const token = localStorage.getItem("token");
 
         try {
-            const response = await fetch(`http://localhost:3000/reservas/${idReserva}/renovar`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                }
-            });
-
-            const data = await response.json();
-            if (!response.ok) {
-                toast.error(data.error || "Erro ao renovar reserva.");
-                return;
-            }
+            await api.put(`/reservas/${idReserva}/renovar`, {},
+                { headers: { Authorization: `Bearer ${token}`}}                
+            );
 
             toast.success("Reserva renovada com sucesso!");
             listaReservas(token);
