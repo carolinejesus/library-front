@@ -1,13 +1,17 @@
 # Empréstimos e Reservas de Materiais da Biblioteca
 
 ## 1) Problema
-Em uma realidade alternativa, os alunos precisam diariamente de livros para acompanhar suas aulas.  
-Na turma de **Desenvolvimento Web** existem **42 alunos** e apenas **13 exemplares emprestáveis** do livro *“Lógica de Programação e Algoritmos com JavaScript”*.  
-Para que todos consigam utilizá-lo, é necessário um sistema que organize a **rotatividade dos empréstimos**.
 
-O objetivo é criar um **Sistema de Biblioteca Online** integrado ao portal *Minha Biblioteca* institucional.  
-Alunos regularmente matriculados poderão **reservar e emprestar livros** de forma que haja sempre disponibilidade e controle do acervo.  
-Não é necessário validar matrícula — o sistema já parte do princípio de que o aluno está cadastrado.
+Em uma realidade escolar, os alunos precisam acessar livros regularmente para acompanhar suas atividades acadêmicas.  
+Como o número de exemplares é limitado, é necessário um sistema que organize **reservas, empréstimos e renovações**, garantindo que todos os alunos tenham acesso aos materiais disponíveis.  
+
+O objetivo do projeto é criar um **Sistema de Biblioteca Online**, onde alunos e bibliotecários interagem de forma organizada:  
+
+- **Alunos** podem pesquisar livros, visualizar detalhes, fazer reservas, renovar ou cancelar empréstimos.  
+- **Bibliotecários** podem gerenciar usuários e livros, registrar empréstimos e devoluções, e controlar o acervo de forma eficiente.  
+
+O sistema parte do princípio de que todos os usuários já estão cadastrados e autenticados, integrando funcionalidades de **controle de disponibilidade** e **rotatividade do acervo**.
+
 
 ---
 
@@ -18,30 +22,38 @@ Não é necessário validar matrícula — o sistema já parte do princípio de 
 ---
 
 ## 3) Casos de Uso
-**Todos:**  
-- Logar e deslogar no sistema  
-- Alterar foto de perfil
 
-**Aluno:**  
-- Pesquisar livros e ver quantos exemplares estão disponíveis, assim como descrição, título, etc  
-- Fazer **reserva** para retirar livro na biblioteca quando tiver exemplares disponíveis  
+### Todos os usuários
+- **Logar** e **deslogar** no sistema.  
+- **Alterar a foto de perfil**.
 
-**Bibliotecário:**  
-- Atualizar quantidade de exemplares no acervo  
-- Registrar empréstimos e finalizações, atualizando status do material
-- Registrar usuários (Funcionários, alunos)
+### Aluno
+- **Pesquisar livros** pelo título e visualizar informações detalhadas, como descrição, autor e quantidade de exemplares disponíveis.  
+- **Realizar reservas** de livros disponíveis para retirada na biblioteca.  
+- **Renovar** ou **cancelar** reservas ativas.
+
+### Bibliotecário
+- **Gerenciar livros:** atualizar informações e quantidade de exemplares no acervo, adicionar novos livros.  
+- **Gerenciar reservas e empréstimos:** registrar empréstimos, marcar como finalizadas, cancelar ou excluir reservas.  
+- **Gerenciar usuários:** registrar novos usuários (alunos e funcionários) e atualizar dados existentes.
 
 ---
 
 ## 4) Limites e Suposições
-- O aluno pode **emprestar apenas um exemplar de cada material** por vez e ficar com ele e fazer renovações.  
-- Devolução pode ser feita a qualquer momento, garantindo a rotatividade.  
-- Caso ultrapasse o limite de renovações, o aluno fica **impedido de renovar o livro**.
+
+- Cada aluno pode **emprestar apenas um exemplar de cada livro** por vez.  
+- O aluno pode realizar **renovações**, respeitando o limite máximo definido pelo sistema (até 3 vezes).  
+- A **devolução** pode ser feita a qualquer momento, garantindo a rotatividade dos livros.  
+- Caso o limite de renovações seja atingido, o aluno **não poderá renovar o livro** novamente até devolvê-lo.  
+
 
 ---
 
-## 5) Hipóteses e Validação (exemplo)
-- A validação é feita por meio de tokens, sendo necessário fazer login novamente caso expire.
+## 5) Hipóteses e Validação
+
+- A validação de sessão é feita por meio de **tokens de autenticação**.  
+- Caso o token expire, o usuário precisa **fazer login novamente** para acessar o sistema.  
+- Essa abordagem garante que apenas usuários autenticados possam realizar ações como **reservas, renovações ou cancelamentos**.
 
 ---
 
@@ -84,9 +96,10 @@ Não é necessário validar matrícula — o sistema já parte do princípio de 
 ---
 
 ## 7) Esboços de Telas
-**Tela de Login**
+### Tela de Login Ideal
 ![Tela de Login](capturas/tela_inicial.png)
-**Tela Home**
+
+### Home
 ![Home](capturas/home.png)
 ![Esboço da home](capturas/esboço1.png)
 
@@ -174,7 +187,7 @@ Usuario (1) ───< Reserva (N)
 Livro (1) ───< Emprestimo (N)
 Livro (1) ───< Reserva (N)
 
-**Detalhamento**
+### Detalhamento
 
 - Um **Usuario** pode ter muitos **Emprestimos** e muitas **Reservas** (1 → N)  
 - Um **Livro** pode ter muitos **Emprestimos** e muitas **Reservas** (1 → N)  
@@ -309,6 +322,7 @@ UPDATE reserva
 SET status = 'cancelada',
     data_devolucao = CURRENT_TIMESTAMP  -- opcional, caso queira registrar a data
 WHERE id = 1;
+
 
 
 
