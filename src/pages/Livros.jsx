@@ -120,7 +120,7 @@ const Livros = () => {
     };
 
     const voltar = () => {
-        navigate(-1);
+        navigate("/funcionario");
     };
 
     return (
