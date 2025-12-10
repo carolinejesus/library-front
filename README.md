@@ -46,21 +46,40 @@ Não é necessário validar matrícula — o sistema já parte do princípio de 
 ---
 
 ## 6) Fluxo Principal
-1. Aluno pesquisa um material  
-2. Sistema mostra exemplares disponíveis  
-3. Se houver exemplar → aluno faz reserva para retirada  
-4. Se não houver → aluno entra na fila de espera  
-5. Bibliotecário recebe notificação e libera o material  
-6. Bibliotecário entrega o livro ao aluno  
-7. Após o uso, o aluno devolve  
-8. Bibliotecário atualiza status ou atribui ao próximo da fila
 
-**Primeira fatia (MVP):**  
-- **Tela única:** Busca de livros e reserva  
-- **Ação principal:** Aluno faz uma reserva  
-- **Critérios de aceite:**  
-  - É possível pesquisar por título e ver a disponibilidade  
-  - É possível reservar e registrar a reserva em banco de dados
+## Fluxo do Sistema e Funcionalidades
+
+### Aluno
+- O **aluno faz login** no sistema.  
+- Após o login, a **tela principal** é a **HomeAluno**, onde ele pode:  
+  - Visualizar suas **reservas ativas**.  
+  - Renovar ou cancelar reservas existentes.  
+  - Acessar o **catálogo de livros**, onde pode:  
+    - Pesquisar livros por título.  
+    - Visualizar detalhes do livro (autor, descrição, exemplares disponíveis).  
+    - Realizar uma **reserva** de livros disponíveis.
+
+---
+
+### Funcionário
+- O **funcionário faz login** no sistema.  
+- A **HomeFuncionario** exibe todas as **reservas do sistema**.  
+- A partir da tela principal, ele pode acessar:  
+
+1. **Gerenciamento de usuários:**  
+   - Visualizar todos os usuários.  
+   - Atualizar dados de usuários existentes.  
+   - Adicionar novos usuários.  
+
+2. **Gerenciamento de livros:**  
+   - Visualizar todos os livros.  
+   - Editar informações de livros existentes.  
+   - Adicionar novos livros ao catálogo.  
+
+- Na tela de reservas, o funcionário também pode:  
+  - Marcar reservas como **finalizadas**.  
+  - **Cancelar** reservas.  
+  - **Excluir** reservas do banco, se necessário.
 
 ---
 
@@ -72,24 +91,24 @@ Não é necessário validar matrícula — o sistema já parte do princípio de 
 ## 8) Tecnologias
 
 ### 8.1 Navegador
-- **Front-end:** HTML, CSS, JavaScript 
-- **Armazenamento local:** LocalStorage 
-- **Hospedagem:** GitHub Pages
+- **Front-end:** React com Vite, Bootstrap para estilização
+- **Armazenamento local:** LocalStorage (para sessão ou dados temporários)
+- **Hospedagem:** Render
 
 ### 8.2 Back-end
 - **Servidor/API:** Node.js com Express  
 - **Banco de dados:** PostgreSQL 
-- **Deploy:** Railway ou Render
+- **Deploy:** Render
 
 ---
 
-## 9) Plano de Dados (Dia 0)
+## 9) Plano de Dados
 
 ### 9.1 Entidades
 - **Usuario** — representa alunos e bibliotecários  
 - **Livro** — representa um título no acervo  
 - **Emprestimo** — registra o empréstimo de um exemplar a um usuário  
-- **Reserva** — fila de espera para um livro
+- **Reserva** — Representa a reserva de um exemplar
 
 ### 9.2 Campos por Entidade
 
@@ -285,3 +304,4 @@ UPDATE reserva
 SET status = 'cancelada',
     data_devolucao = CURRENT_TIMESTAMP  -- opcional, caso queira registrar a data
 WHERE id = 1;
+
