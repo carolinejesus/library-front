@@ -117,7 +117,7 @@ const Livros = () => {
     };
 
     const voltar = () => {
-        window.location.href = "/funcionario";
+        window.history.back();
     };
 
     return (
