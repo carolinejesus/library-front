@@ -131,7 +131,7 @@ const Usuarios = () => {
     };
 
     const sair = () => {
-        window.location.href = "/funcionario";
+        window.history.back();
     };
 
     return (
