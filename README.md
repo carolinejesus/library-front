@@ -84,8 +84,11 @@ Não é necessário validar matrícula — o sistema já parte do princípio de 
 ---
 
 ## 7) Esboços de Telas
+**Tela de Login**
 ![Tela de Login](capturas/tela_inicial.png)
+**Tela Home**
 ![Home](capturas/home.png)
+**Esboço da Home**
 ![Esboço da home](capturas/esboço1.png)
 
 
@@ -307,5 +310,6 @@ UPDATE reserva
 SET status = 'cancelada',
     data_devolucao = CURRENT_TIMESTAMP  -- opcional, caso queira registrar a data
 WHERE id = 1;
+
 
 
