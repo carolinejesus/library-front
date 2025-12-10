@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { api } from "../utils/api";
+import { useNavigate } from "react-router-dom";
+
+const navigate = useNavigate();
 
 const Livros = () => {
     const [livros, setLivros] = useState([]);
@@ -117,7 +120,7 @@ const Livros = () => {
     };
 
     const voltar = () => {
-        window.history.back();
+        navigate(-1);
     };
 
     return (
