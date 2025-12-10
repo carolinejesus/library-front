@@ -71,7 +71,7 @@ const Catalogo = () => {
     };
 
     const voltar = () => {
-        window.location.href = "/aluno";
+        window.history.back();
     };
 
     if (detalhes) {
