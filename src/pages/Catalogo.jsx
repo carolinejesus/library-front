@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { api } from "../utils/api";
 
@@ -7,7 +6,7 @@ const Catalogo = () => {
     const [livros, setLivros] = useState([]);
     const [filtro, setFiltro] = useState("");
     const [detalhes, setDetalhes] = useState(null);
-    const navigate = useNavigate();
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         carregarLivros();
