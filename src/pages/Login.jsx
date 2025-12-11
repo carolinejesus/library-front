@@ -89,15 +89,12 @@ const Login = () => {
                             required
                         />
                     </div>
-
-                    <button type="submit" className="btn btn-primary w-100">
+                    <button type="submit" className="btn btn-primary w-100 mb-3">
                         Entrar
                     </button>
-                    <div mb-3>
-                        <button className="btn btn-outline-primary w-100" onClick={() => navigate("/catalogo")}>
-                            Visualizar Catálogo
-                        </button>
-                    </div>
+                    <button className="btn btn-outline-primary w-100" onClick={() => navigate("/catalogo")}>
+                        Visualizar Catálogo
+                    </button>
                 </form>
             </div>
         </div>
