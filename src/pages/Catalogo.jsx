@@ -7,7 +7,7 @@ const Catalogo = () => {
     const [livros, setLivros] = useState([]);
     const [filtro, setFiltro] = useState("");
     const [detalhes, setDetalhes] = useState(null);
-    const naigate = useNavigate();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
