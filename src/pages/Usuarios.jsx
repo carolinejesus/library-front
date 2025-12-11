@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { api } from "../utils/api";
 
@@ -7,6 +8,7 @@ const Usuarios = () => {
     const [erro, setErro] = useState("");
     const [modoEdicao, setModoEdicao] = useState(false);
     const [mostrarModal, setMostrarModal] = useState(false);
+    const navigate = useNavigate();
 
     const [form, setForm] = useState({
         id: "",

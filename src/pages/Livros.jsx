@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { api } from "../utils/api";
 
 const Livros = () => {
+    const navigate = useNavigate();
     const [livros, setLivros] = useState([]);
     const [confirmacao, setConfirmacao] = useState({
         mostrar: false,

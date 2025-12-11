@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { api } from "../utils/api";
 
 const Catalogo = () => {
     const [livros, setLivros] = useState([]);
     const [filtro, setFiltro] = useState("");
-    const [detalhes, setDetalhes] = useState(null)
+    const [detalhes, setDetalhes] = useState(null);
+    const naigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
+            toast.error("Não autorizado.");
             navigate("/");
-            return toast.error("Não autorizado.");
+            return;
         }
         carregarLivros();
     }, []);
