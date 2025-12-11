@@ -170,14 +170,7 @@ const Catalogo = () => {
                                             </span>
                                         </small>
                                     </div>
-                                    {!token ? (
-                                        <button className="btn btn-primary mt-3"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                navigate("/");
-                                            }} > Fazer login para ver detalhes
-                                        </button>
-                                    ) : (
+                                    {!token && (
                                         <button className="btn btn-primary mt-3"
                                             onClick={(e) => {
                                                 e.stopPropagation();
