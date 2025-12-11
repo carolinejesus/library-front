@@ -10,12 +10,6 @@ const Catalogo = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            toast.error("Não autorizado.");
-            navigate("/");
-            return;
-        }
         carregarLivros();
     }, []);
 

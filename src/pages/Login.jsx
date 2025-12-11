@@ -93,6 +93,9 @@ const Login = () => {
                     <button type="submit" className="btn btn-primary w-100">
                         Entrar
                     </button>
+                    <button className="btn btn-outline-primary w-100" onClick={() => navigate("/catalogo")}>
+                        Visualizar Catálogo
+                    </button>
                 </form>
             </div>
         </div>
