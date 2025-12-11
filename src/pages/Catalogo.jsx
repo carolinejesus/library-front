@@ -34,7 +34,7 @@ const Catalogo = () => {
             headers: { Authorization: "Bearer " + token }
         });
 
-        setDetalhes(response.data);  
+        setDetalhes(response.data);
     };
 
     const reservarLivro = async (idLivro) => {
@@ -123,7 +123,7 @@ const Catalogo = () => {
             </div>
         );
     }
-    
+
     return (
         <div className="container-fluid p-4" style={{ background: "#f4f4f4", minHeight: "100vh" }}>
             <div className="p-4 rounded shadow"
@@ -171,14 +171,16 @@ const Catalogo = () => {
                                             </span>
                                         </small>
                                     </div>
-                                    <button className="btn btn-primary mt-3"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            verDetalhes(livro.id);
-                                        }}
-                                    >
-                                        Ver detalhes
-                                    </button>
+                                    {!token && (
+                                        <button className="btn btn-primary mt-3"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                verDetalhes(livro.id);
+                                            }}
+                                        >
+                                            Ver detalhes
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))
