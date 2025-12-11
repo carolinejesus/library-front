@@ -52,7 +52,9 @@ const AlunoHome = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) { navigate("/"); return; }
+        if (!token) { 
+            toast.error("Não autorizado.");
+            navigate("/"); return; }
 
         const usuarioLocal = JSON.parse(localStorage.getItem("usuario"));
         if (!usuarioLocal) return;

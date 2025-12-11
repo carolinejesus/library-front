@@ -40,6 +40,12 @@ const Livros = () => {
     };
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("Não autorizado.");
+            navigate("/");
+            return;
+        }
         listaLivros();
     }, []);
 

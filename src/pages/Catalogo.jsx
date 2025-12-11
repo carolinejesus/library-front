@@ -8,6 +8,11 @@ const Catalogo = () => {
     const [detalhes, setDetalhes] = useState(null)
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/");
+            return toast.error("Não autorizado.");
+        }
         carregarLivros();
     }, []);
 
