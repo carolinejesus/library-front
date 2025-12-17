@@ -106,7 +106,7 @@ O sistema parte do princípio de que todos os usuários já estão cadastrados e
 ![contexto](capturas/contexto1.png)
 
 ### Diagrama de conteiner
-![conteiner](captuas/conteiner.png)
+![conteiner](capturas/conteiner.png)
 
 ### Diagrama de classes
 ![classe](capturas/classes.png)
@@ -333,6 +333,7 @@ UPDATE reserva
 SET status = 'cancelada',
     data_devolucao = CURRENT_TIMESTAMP  -- opcional, caso queira registrar a data
 WHERE id = 1;
+
 
 
 
