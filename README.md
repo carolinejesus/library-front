@@ -102,6 +102,17 @@ O sistema parte do princípio de que todos os usuários já estão cadastrados e
 ### Home
 ![Home](capturas/home.png)
 ![Esboço da home](capturas/esboço1.png)
+### Diagrama de contexto
+![contexto](capturas/contexto1.png)
+
+### Diagrama de conteiner
+![conteiner](captuas/conteiner.png)
+
+### Diagrama de classes
+![classe](capturas/classes.png)
+
+### Diagrama de sequência
+![sequencia](capturas/sequencia.png)
 
 
 ---
@@ -322,6 +333,7 @@ UPDATE reserva
 SET status = 'cancelada',
     data_devolucao = CURRENT_TIMESTAMP  -- opcional, caso queira registrar a data
 WHERE id = 1;
+
 
 
 
