@@ -21,13 +21,18 @@ const Catalogo = () => {
         }
     };
 
-    const livrosFiltrados = livros.filter(l =>
+    const livrosFiltrados = Array.isArray(livros) ? livros.filter(l =>
         l.titulo.toLowerCase().includes(filtro.toLowerCase()) ||
         l.autor.toLowerCase().includes(filtro.toLowerCase())
-    );
+    ) : [];
 
     const verDetalhes = async (id) => {
         const token = localStorage.getItem("token");
+
+        if(!token){
+            toast.error("Faça login para ver os detalhes do livro.");
+            return;
+        }
 
         const response = await api.get(`/livros/${id}`, {
             headers: { Authorization: "Bearer " + token }
@@ -75,6 +80,7 @@ const Catalogo = () => {
         window.history.back();
     };
 
+
     if (detalhes) {
         return (
             <div className="container-fluid p-4" style={{ background: "#f4f4f4", minHeight: "100vh" }}>
@@ -109,6 +115,7 @@ const Catalogo = () => {
                             >
                                 Voltar ao Catálogo
                             </button>
+                            
                             <button
                                 className="btn btn-primary"
                                 disabled={detalhes.copias_disponiveis === 0}

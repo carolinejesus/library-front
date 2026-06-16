@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { api } from "../utils/api";
+import jsPDF from "jspdf";
 
 const AlunoHome = () => {
     const backendUrl = import.meta.env.VITE_API_URL;
@@ -52,9 +53,10 @@ const AlunoHome = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) { 
+        if (!token) {
             toast.error("Não autorizado.");
-            navigate("/"); return; }
+            navigate("/"); return;
+        }
 
         const usuarioLocal = JSON.parse(localStorage.getItem("usuario"));
         if (!usuarioLocal) return;
@@ -95,7 +97,7 @@ const AlunoHome = () => {
         try {
             await api.put(`/reservas/${idReserva}/cancelar`,
                 { status: "cancelada" },
-                { headers: { "Authorization": "Bearer "+ token},}
+                { headers: { "Authorization": "Bearer " + token }, }
             );
 
             toast.success("Reserva cancelada com sucesso!");
@@ -108,7 +110,7 @@ const AlunoHome = () => {
 
         try {
             await api.put(`/reservas/${idReserva}/renovar`, {},
-                { headers: { Authorization: `Bearer ${token}`}}                
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             toast.success("Reserva renovada com sucesso!");
@@ -131,6 +133,39 @@ const AlunoHome = () => {
             month: "2-digit",
             year: "numeric"
         });
+    };
+
+    const gerarReciboReserva = (reserva) => {
+        if (!reserva) {
+            toast.error("Nenhuma reserva encontrada para gerar recibo.");
+            return;
+        }
+
+        const usuarioLocal = JSON.parse(localStorage.getItem("usuario")) || {};
+        const doc = new jsPDF();
+
+        doc.setFontSize(18);
+        doc.text("Recibo de Reserva", 105, 20, { align: "center" });
+
+        doc.setFontSize(12);
+        doc.text(`Aluno: ${usuarioLocal.nome || nome || "Desconhecido"}`, 20, 40);
+        doc.text(`E-mail: ${usuarioLocal.email || "Não informado"}`, 20, 48);
+
+        doc.text(`Livro: ${reserva.livro || "Não informado"}`, 20, 60);
+        doc.text(`Autor: ${reserva.autor || "Não informado"}`, 20, 68);
+        doc.text("Quantidade: 1", 20, 76);
+        doc.text(`Status da reserva: ${reserva.status || "ativa"}`, 20, 84);
+
+        doc.text(`Data da reserva: ${formatarData(reserva.data_reserva)}`, 20, 96);
+        doc.text(`Data de devolução: ${formatarData(reserva.data_devolucao)}`, 20, 104);
+
+        doc.text("Este documento comprova a reserva do livro no sistema.", 20, 130);
+
+        const nomeArquivo = reserva.livro
+            ? reserva.livro.replaceAll(" ", "-").toLowerCase()
+            : "livro";
+
+        doc.save(`recibo-reserva-${nomeArquivo}.pdf`);
     };
 
     return (
@@ -229,6 +264,10 @@ const AlunoHome = () => {
                                                 </button>
                                                 <button className="btn btn-danger btn-sm" onClick={() => cancelarReserva(r.id)}>
                                                     ❌ Cancelar
+                                                </button>
+
+                                                <button className="btn btn-primary btn-sm" onClick={() => gerarReciboReserva(r)}>
+                                                    📄 Baixar Recibo
                                                 </button>
                                             </div>
                                         )}
