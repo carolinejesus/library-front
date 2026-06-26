@@ -33,7 +33,7 @@ const FuncionarioHome = () => {
             const { data } = await api.put(
                 `/usuarios/${usuarioLocal.id}/foto`,
                 formData,
-                { headers: { Authorization: `Bearer ${token}`}}
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             const novoUsuario = { ...usuarioLocal, foto: data.foto };
@@ -52,9 +52,10 @@ const FuncionarioHome = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) { 
+        if (!token) {
             toast.error("Não autorizado.");
-            navigate("/"); return; }
+            navigate("/"); return;
+        }
 
         const usuarioLocal = JSON.parse(localStorage.getItem("usuario"));
         if (!usuarioLocal) return;
@@ -78,7 +79,7 @@ const FuncionarioHome = () => {
             const { data } = await api.get("/reservas", {
                 headers: { "Authorization": "Bearer " + token }
             });
-            setReservas(data);         
+            setReservas(data);
 
         } catch (err) {
             if (err.response?.status === 401) sair();
@@ -93,11 +94,11 @@ const FuncionarioHome = () => {
         try {
             await api.put(`/reservas/${idReserva}/finalizar`,
                 { status: "Entregue." },
-                 {headers: { "Authorization": "Bearer " + token } }
+                { headers: { "Authorization": "Bearer " + token } }
             );
             toast.success("Reserva finalizada com sucesso!");
             listaReservas(token);
-            
+
         } catch (err) {
             console.error("Erro ao carregar reservas.", err);
         }
@@ -107,15 +108,15 @@ const FuncionarioHome = () => {
         const token = localStorage.getItem("token");
 
         try {
-            await api.put(`/reservas/${idReserva}/cancelar`, 
+            await api.put(`/reservas/${idReserva}/cancelar`,
                 { status: "cancelada" },
                 { headers: { "Authorization": "Bearer " + token }, }
             );
 
             toast.success("Reserva cancelada com sucesso!");
             listaReservas(token);
-        } catch (err) { 
-            toast.error("Erro ao cancelar reserva."); 
+        } catch (err) {
+            toast.error("Erro ao cancelar reserva.");
         }
     };
 
@@ -124,7 +125,8 @@ const FuncionarioHome = () => {
 
         try {
             await api.delete(`/reservas/${idReserva}`, {
-                headers: { "Authorization": "Bearer " + token }, }
+                headers: { "Authorization": "Bearer " + token },
+            }
             );
 
             toast.success("Reserva excluida com sucesso!");
@@ -232,41 +234,66 @@ const FuncionarioHome = () => {
                                 {reservas.map((r) => (
                                     <div
                                         key={r.id}
-                                        className="p-3 rounded border shadow-sm position-relative"
+                                        className="p-3 rounded border shadow-sm"
                                         style={{ background: "#fafafa" }}
                                     >
-                                        <h6 className="mb-1"><strong>{r.livro || "-"}</strong></h6>
-                                        <p className="mb-0">Autor: {r.autor || "-"}</p>
-                                        <p className="mb-0">Status:{" "}
-                                            <span className={`fw-bold ${r.status === "ativa" ? "text-success" : r.status === "finalizada" ? "text-primary" : "text-danger"}`}>
-                                                {r.status || "-"}
-                                            </span>
-                                        </p>
-                                        <p className="mb-0">Reservado por <strong>{r.usuario}</strong></p>
-                                        <small className="text-muted">
-                                            Em: {formatarData(r.data_reserva)}{""}
-                                            {r.data_devolucao ? ` | Devolução em: ${formatarData(r.data_devolucao)}` : ""}
-                                        </small>
-                                        <div className="position-absolute d-flex flex-column gap-2"
-                                            style={{
-                                                top: "50%",
-                                                right: "20px",
-                                                transform: "translateY(-50%)"
-                                            }}>
-                                            {r.status === "ativa" ? (
-                                                <>
-                                                    <button className="btn btn-success btn-sm" onClick={() => finalizarReserva(r.id)}>
-                                                        ✔ Finalizar
+                                        <div className="d-flex gap-3 align-items-start">
+                                            <img
+                                                src={r.capa || "https://via.placeholder.com/80x110?text=Sem+Capa"}
+                                                alt={r.livro || "Capa do livro"}
+                                                style={{
+                                                    width: "80px",
+                                                    height: "110px",
+                                                    objectFit: "cover",
+                                                    borderRadius: "6px",
+                                                    border: "1px solid #ddd"
+                                                }}
+                                                onError={(e) => {
+                                                    e.currentTarget.src = "https://via.placeholder.com/80x110?text=Sem+Capa";
+                                                }}
+                                            />
+
+                                            <div className="flex-grow-1">
+                                                <h6 className="mb-1">
+                                                    <strong>{r.livro || "-"}</strong>
+                                                </h6>
+
+                                                <p className="mb-0">Aluno: {r.usuario || "-"}</p>
+                                                <p className="mb-0">Autor: {r.autor || "-"}</p>
+
+                                                {r.genero && (
+                                                    <p className="mb-0">Gênero: {r.genero}</p>
+                                                )}
+
+                                                <p className="mb-0">
+                                                    Status:{" "}
+                                                    <span className={`fw-bold ${r.status === "ativa" ? "text-success" : r.status === "finalizada" ? "text-primary" : "text-danger"}`}>
+                                                        {r.status || "-"}
+                                                    </span>
+                                                </p>
+
+                                                <small className="text-muted">
+                                                    Reservado em: {formatarData(r.data_reserva)}{" "}
+                                                    {r.data_devolucao ? `| Devolução: ${formatarData(r.data_devolucao)}` : ""}
+                                                </small>
+
+                                                {r.status === "ativa" ? (
+                                                    <>
+                                                        <div className="d-flex gap-2 mt-3">
+                                                            <button className="btn btn-success btn-sm" onClick={() => finalizarReserva(r.id)}>
+                                                                ✔ Finalizar
+                                                            </button>
+                                                            <button className="btn btn-danger btn-sm" onClick={() => cancelarReserva(r.id)}>
+                                                                ❌ Cancelar
+                                                            </button>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <button className="btn btn-danger btn-sm" onClick={() => excluirReserva(r.id)}>
+                                                        🗑 Excluir
                                                     </button>
-                                                    <button className="btn btn-danger btn-sm" onClick={() => cancelarReserva(r.id)}>
-                                                        ❌ Cancelar
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <button className="btn btn-danger btn-sm" onClick={() => excluirReserva(r.id)}>
-                                                    🗑 Excluir
-                                                </button>
-                                            )}
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

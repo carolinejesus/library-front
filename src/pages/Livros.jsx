@@ -158,6 +158,7 @@ const Livros = () => {
                             <thead className="table-light">
                                 <tr>
                                     <th>ID</th>
+                                    <th>Capa</th>
                                     <th>Título</th>
                                     <th>Autor</th>
                                     <th>Gênero</th>
@@ -170,6 +171,21 @@ const Livros = () => {
                             <tbody>
                                 {livros.map((livro) => (
                                     <tr key={livro.id}>
+                                        <td>
+                                            <img
+                                                src={livro.capa || "https://via.placeholder.com/60x80?text=Sem+Capa"}
+                                                alt={livro.titulo}
+                                                style={{
+                                                    width: "50px",
+                                                    height: "70px",
+                                                    objectFit: "cover",
+                                                    borderRadius: "4px"
+                                                }}
+                                                onError={(e) => {
+                                                    e.currentTarget.src = "https://via.placeholder.com/60x80?text=Sem+Capa";
+                                                }}
+                                            />
+                                        </td>
                                         <td>{livro.id}</td>
                                         <td>{livro.titulo}</td>
                                         <td>{livro.autor}</td>
