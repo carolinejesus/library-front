@@ -5,6 +5,7 @@ import { api } from "../utils/api";
 const Catalogo = () => {
     const [livros, setLivros] = useState([]);
     const [filtro, setFiltro] = useState("");
+    const [generoFiltro, setGeneroFiltro] = useState("");
     const [detalhes, setDetalhes] = useState(null);
     const token = localStorage.getItem("token");
 
@@ -21,10 +22,25 @@ const Catalogo = () => {
         }
     };
 
-    const livrosFiltrados = Array.isArray(livros) ? livros.filter(l =>
-        l.titulo.toLowerCase().includes(filtro.toLowerCase()) ||
-        l.autor.toLowerCase().includes(filtro.toLowerCase())
-    ) : [];
+    const generosDisponiveis = Array.isArray(livros)
+        ? [...new Set(livros.map((livro) => livro.genero).filter(Boolean))]
+        : [];
+
+    const livrosFiltrados = Array.isArray(livros)
+        ? livros.filter((l) => {
+            const textoBusca = filtro.toLowerCase();
+
+            const combinaTexto =
+                (l.titulo || "").toLowerCase().includes(textoBusca) ||
+                (l.autor || "").toLowerCase().includes(textoBusca) ||
+                (l.genero || "").toLowerCase().includes(textoBusca);
+
+            const combinaGenero =
+                generoFiltro === "" || l.genero === generoFiltro;
+
+            return combinaTexto && combinaGenero;
+        })
+        : [];
 
     const verDetalhes = async (id) => {
         const token = localStorage.getItem("token");
@@ -162,10 +178,33 @@ const Catalogo = () => {
                     <input
                         type="text"
                         className="form-control me-2"
-                        placeholder="Pesquisar..."
+                        placeholder="Pesquisar por título, autor ou gênero..."
                         value={filtro}
                         onChange={(e) => setFiltro(e.target.value)}
                     />
+                    <select
+                        className="form-select me-2"
+                        style={{ maxWidth: "220px" }}
+                        value={generoFiltro}
+                        onChange={(e) => setGeneroFiltro(e.target.value)}
+                    >
+                        <option value="">Todos os gêneros</option>
+
+                        {generosDisponiveis.map((genero) => (
+                            <option key={genero} value={genero}>
+                                {genero}
+                            </option>
+                        ))}
+                    </select>
+                    <button
+                        className="btn btn-outline-secondary me-2"
+                        onClick={() => {
+                            setFiltro("");
+                            setGeneroFiltro("");
+                        }}
+                    >
+                        Limpar
+                    </button>
                     <button className="btn btn-danger" onClick={voltar}>
                         Voltar
                     </button>
