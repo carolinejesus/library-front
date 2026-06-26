@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { api } from "../utils/api";
+import { translations } from "../i18n/translations";
 
 const Catalogo = () => {
     const [livros, setLivros] = useState([]);
@@ -8,6 +9,13 @@ const Catalogo = () => {
     const [generoFiltro, setGeneroFiltro] = useState("");
     const [detalhes, setDetalhes] = useState(null);
     const token = localStorage.getItem("token");
+
+    const idiomaNavegador = navigator.language.slice(0, 2);
+
+    const idioma = ["pt", "en", "es"].includes(idiomaNavegador)
+        ? idiomaNavegador : "pt";
+
+    const t = translations[idioma];
 
     useEffect(() => {
         carregarLivros();
@@ -46,7 +54,7 @@ const Catalogo = () => {
         const token = localStorage.getItem("token");
 
         if (!token) {
-            toast.error("Faça login para ver os detalhes do livro.");
+            toast.error(t.loginToSeeDetails);
             return;
         }
 
@@ -69,7 +77,7 @@ const Catalogo = () => {
         }
 
         if (!id_usuario) {
-            toast.error("Usuário não encontrado.")
+            toast.error(t.userNotFound)
         }
 
         const reserva = {
@@ -82,13 +90,13 @@ const Catalogo = () => {
                 headers: { Authorization: "Bearer " + token },
             });
 
-            toast.success("Livro reservado com sucesso!");
+            toast.success(t.reservedSuccess);
             setDetalhes(null);
             carregarLivros();
 
         } catch (err) {
             console.error(err);
-            alert("Erro ao reservar livro.")
+            alert(t.reserveError)
         }
     };
 
@@ -103,7 +111,7 @@ const Catalogo = () => {
                 <div className="p-4 rounded shadow"
                     style={{ background: "#ffffff", minHeight: "85vh" }}
                 >
-                    <h3 className="mb-4">Detalhes do Livro</h3>
+                    <h3 className="mb-4">{t.bookDetails}</h3>
                     <div className="border rounded p-4 shadow-sm" style={{ background: "#fafafa" }}>
                         <img
                             src={detalhes.capa || "https://via.placeholder.com/180x250?text=Sem+Capa"}
@@ -120,14 +128,13 @@ const Catalogo = () => {
                             }}
                         />
                         <h4>{detalhes.titulo}</h4>
-                        <p className="text-muted">Autor: {detalhes.autor}</p>
-                        <p className="text-muted"><strong>Gênero: </strong>{detalhes.genero || "Não informado"}</p>
-                        <p className="text-muted"><strong>Gênero: </strong>{detalhes.genero || "Não informado"}</p>
+                        <p className="text-muted">{t.author}: {detalhes.autor}</p>
+                        <p className="text-muted"><strong>{t.genre}: </strong>{detalhes.genero || "Não informado"}</p>
                         <p className="text-muted">
-                            <strong>Descrição: </strong>{detalhes.descricao || "Sem descrição"}
+                            <strong>{t.description}: </strong>{detalhes.descricao || "Sem descrição"}
                         </p>
                         <p>
-                            <strong>Quantidade disponível: </strong>
+                            <strong>{t.quantityAvailable}: </strong>
                             {detalhes.copias_disponiveis}
                         </p>
                         {detalhes.reserva && (
@@ -145,7 +152,7 @@ const Catalogo = () => {
                                 className="btn btn-secondary"
                                 onClick={() => setDetalhes(null)}
                             >
-                                Voltar ao Catálogo
+                                {t.backToCatalog}
                             </button>
 
                             <button
@@ -153,7 +160,7 @@ const Catalogo = () => {
                                 disabled={detalhes.copias_disponiveis === 0}
                                 onClick={() => reservarLivro(detalhes.id)}
                             >
-                                Reservar Livro
+                                {t.reserveBook}
                             </button>
                         </div>
                     </div>
@@ -167,7 +174,7 @@ const Catalogo = () => {
             <div className="p-4 rounded shadow"
                 style={{ background: "#ffffff", minHeight: "85vh" }}
             >
-                <h3 className="text-center mb-4">Catálogo de Livros</h3>
+                <h3 className="text-center mb-4">{t.catalogTitle}</h3>
                 <div
                     className="d-flex justify-content-between align-items-center mb-4 p-3 rounded"
                     style={{
@@ -178,7 +185,7 @@ const Catalogo = () => {
                     <input
                         type="text"
                         className="form-control me-2"
-                        placeholder="Pesquisar por título, autor ou gênero..."
+                        placeholder={t.searchPlaceholder}
                         value={filtro}
                         onChange={(e) => setFiltro(e.target.value)}
                     />
@@ -188,7 +195,7 @@ const Catalogo = () => {
                         value={generoFiltro}
                         onChange={(e) => setGeneroFiltro(e.target.value)}
                     >
-                        <option value="">Todos os gêneros</option>
+                        <option value="">{t.allGenres}</option>
 
                         {generosDisponiveis.map((genero) => (
                             <option key={genero} value={genero}>
@@ -203,16 +210,16 @@ const Catalogo = () => {
                             setGeneroFiltro("");
                         }}
                     >
-                        Limpar
+                        {t.clear}
                     </button>
                     <button className="btn btn-danger" onClick={voltar}>
-                        Voltar
+                        {t.back}
                     </button>
                 </div>
                 <div className="row">
                     {livrosFiltrados.length === 0 ? (
                         <div className="alert alert-secondary text-center">
-                            Nenhum livro encontrado.
+                            {t.noBooks}
                         </div>
                     ) : (
                         livrosFiltrados.map(livro => (
@@ -238,10 +245,10 @@ const Catalogo = () => {
                                             }}
                                         />
                                         <h6 className="mb-1">{livro.titulo}</h6>
-                                        <p className="text-muted mb-1">Autor: {livro.autor}</p>
-                                        <p className="text-muted"><strong>Gênero: </strong>{livro.genero || "Não informado"}</p>
+                                        <p className="text-muted mb-1">{t.author}: {livro.autor}</p>
+                                        <p className="text-muted">{t.genre}: {livro.genero || t.notInformed}</p>
                                         <small className="text-muted">
-                                            Disponíveis:{" "}
+                                            {t.available}:{" "}
                                             <span className={`fw-bold ${livro.copias_disponiveis > 0 ? "text-success" : "text-danger"}`}>
                                                 {livro.copias_disponiveis}
                                             </span>
@@ -254,7 +261,7 @@ const Catalogo = () => {
                                                 verDetalhes(livro.id);
                                             }}
                                         >
-                                            Ver detalhes
+                                            {t.details}
                                         </button>
                                     )}
                                 </div>
