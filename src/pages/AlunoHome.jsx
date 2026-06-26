@@ -144,29 +144,113 @@ const AlunoHome = () => {
         const usuarioLocal = JSON.parse(localStorage.getItem("usuario")) || {};
         const doc = new jsPDF();
 
-        doc.setFontSize(18);
-        doc.text("Recibo de Reserva", 105, 20, { align: "center" });
+        // --- CONFIGURAÇÃO DE CORES (Paleta Moderna) ---
+        const corPrimaria = [25, 25, 122];    // #449df6
+        const corDestaque = [112, 128, 144];  // #95c7f9
+        const corLinha = [135, 206, 250];        // #1b3855
+        const corFundoCard = [240, 248, 255]; // #acd2f7
 
+        // --- CORPO DO RECIBO ---
+
+        // 1. Cabeçalho com Linha Decorativa
+        doc.setFillColor(...corPrimaria);
+        doc.rect(20, 15, 170, 2, "F"); // Linha horizontal superior fina
+
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(...corPrimaria);
+        doc.text("Comprovante de Reserva", 20, 30);
+
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139); // Texto secundário (cinza)
+        doc.text(`Emitido em: ${new Date().toLocaleDateString('pt-BR')}`, 190, 30, { align: "right" });
+
+        // Linha divisória
+        doc.setDrawColor(...corLinha);
+        doc.line(20, 38, 190, 38);
+
+        // 2. Seção: Dados do Aluno
+        doc.setFont("Helvetica", "bold");
         doc.setFontSize(12);
-        doc.text(`Aluno: ${usuarioLocal.nome || nome || "Desconhecido"}`, 20, 40);
-        doc.text(`E-mail: ${usuarioLocal.email || "Não informado"}`, 20, 48);
+        doc.setTextColor(...corPrimaria);
+        doc.text("DADOS DO ALUNO", 20, 48);
 
-        doc.text(`Livro: ${reserva.livro || "Não informado"}`, 20, 60);
-        doc.text(`Autor: ${reserva.autor || "Não informado"}`, 20, 68);
-        doc.text("Quantidade: 1", 20, 76);
-        doc.text(`Status da reserva: ${reserva.status || "ativa"}`, 20, 84);
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(11);
+        doc.text(`Nome:`, 20, 56);
+        doc.setFont("Helvetica", "bold");
+        doc.text(`${usuarioLocal.nome || nome || "Desconhecido"}`, 45, 56); // Destaca o nome em negrito
 
-        doc.text(`Data da reserva: ${formatarData(reserva.data_reserva)}`, 20, 96);
-        doc.text(`Data de devolução: ${formatarData(reserva.data_devolucao)}`, 20, 104);
+        doc.setFont("Helvetica", "normal");
+        doc.text(`E-mail:`, 20, 64);
+        doc.setTextColor(71, 85, 105);
+        doc.text(`${usuarioLocal.email || "Não informado"}`, 45, 64);
 
-        doc.text("Este documento comprova a reserva do livro no sistema.", 20, 130);
+        // 3. Seção: Detalhes do Livro (Dentro de um Card de Fundo)
+        doc.setFillColor(...corFundoCard);
+        doc.roundedRect(20, 75, 170, 50, 4, 4, "F"); // Caixa de fundo para destacar o livro
 
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(12);
+        doc.setTextColor(...corPrimaria);
+        doc.text("DETALHES DA RESERVA", 28, 87);
+
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(11);
+        doc.text(`Livro:`, 28, 97);
+        doc.setFont("Helvetica", "bold");
+        doc.text(`${reserva.livro || "Não informado"}`, 45, 97);
+
+        doc.setFont("Helvetica", "normal");
+        doc.text(`Autor:`, 28, 105);
+        doc.text(`${reserva.autor || "Não informado"}`, 45, 105);
+
+        doc.text(`Quantidade:`, 28, 113);
+        doc.text("1 un.", 55, 113);
+
+        // Badge/Tag de Status da Reserva
+        doc.setFont("Helvetica", "bold");
+        doc.text(`Status:`, 130, 87);
+        doc.setTextColor(...corDestaque);
+        doc.text(`${(reserva.status || "ativa").toUpperCase()}`, 145, 87);
+
+        // 4. Seção: Prazos e Datas
+        doc.setTextColor(...corPrimaria);
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text("PRAZOS", 20, 142);
+
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(11);
+        doc.text(`Retirada:`, 20, 152);
+        doc.setFont("Helvetica", "bold");
+        doc.text(`${formatarData(reserva.data_reserva)}`, 45, 152);
+
+        doc.setFont("Helvetica", "normal");
+        doc.text(`Devolução:`, 20, 160);
+        doc.setFont("Helvetica", "bold");
+        doc.setTextColor(185, 28, 28); // Vermelho para a data de devolução alertar
+        doc.text(`${formatarData(reserva.data_devolucao)}`, 45, 160);
+
+        // 5. Rodapé Informativo
+        doc.setDrawColor(...corLinha);
+        doc.line(20, 175, 190, 175);
+
+        doc.setFont("Helvetica", "italic");
+        doc.setFontSize(10);
+        doc.setTextColor(148, 163, 184);
+        doc.text("Este documento é um comprovante digital gerado pelo sistema da biblioteca.", 20, 185);
+        doc.text("A não devolução na data estipulada poderá acarretar em suspensão ou multas.", 20, 191);
+
+        // Nome do arquivo
         const nomeArquivo = reserva.livro
             ? reserva.livro.replaceAll(" ", "-").toLowerCase()
             : "livro";
 
         doc.save(`recibo-reserva-${nomeArquivo}.pdf`);
     };
+
 
     return (
         <div
