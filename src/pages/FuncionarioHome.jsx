@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { api } from "../utils/api";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const FuncionarioHome = () => {
     const backendUrl = import.meta.env.VITE_API_URL;
@@ -14,6 +15,7 @@ const FuncionarioHome = () => {
     const [zoom, setZoom] = useState(1);
     const [hoverFoto, setHoverFoto] = useState(false);
     const navigate = useNavigate();
+    const [livrosMaisReservados, setLivrosMaisReservados] = useState([]);
 
     const handleFile = (e) => {
         const img = e.target.files[0];
@@ -72,6 +74,8 @@ const FuncionarioHome = () => {
 
         listaReservas(token);
         console.log(token)
+
+        carregarLivrosMaisReservados();
     }, []);
 
     const listaReservas = async (token) => {
@@ -134,6 +138,25 @@ const FuncionarioHome = () => {
 
         } catch (err) {
             toast.error("Erro ao excluir reserva.")
+        }
+    }
+
+    const carregarLivrosMaisReservados = async () => {
+        const token = localStorage.getItem("token");
+
+        try {
+            const { data } = await api.get("/reservas/relatorio/livros-mais-reservados", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const dadosFormatados = data.map((item) => ({
+                ...item,
+                total_reservas: Number(item.total_reservas)
+            }));
+
+            setLivrosMaisReservados(dadosFormatados);
+        } catch (err) {
+            console.error("Erro ao carregar relatório de livros mais reservados.", err);
         }
     }
 
@@ -214,6 +237,61 @@ const FuncionarioHome = () => {
                     >
                         👥 Gerenciar Usuários
                     </button>
+                    <div
+                        className="p-3 rounded shadow-sm mt-3"
+                        style={{
+                            background: "#ffffff",
+                            maxHeight: "330px",
+                            overflowY: "auto"
+                        }}
+                    >
+                        <h6 className="text-center mb-3">Livros Mais Reservados</h6>
+
+                        {livrosMaisReservados.length === 0 ? (
+                            <div className="alert alert-secondary text-center mb-0">
+                                Sem dados para o relatório.
+                            </div>
+                        ) : (
+                            <div className="d-flex flex-column gap-2">
+                                {livrosMaisReservados.map((livro, index) => (
+                                    <div
+                                        key={index}
+                                        className="d-flex align-items-center gap-2 p-2 rounded border"
+                                        style={{ background: "#fafafa" }}
+                                    >
+                                        <span style={{ fontSize: "1.4rem" }}>
+                                            {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "📚"}
+                                        </span>
+
+                                        <img
+                                            src={livro.capa || `${backendUrl}/uploads/usuarios/default.png`}
+                                            alt={livro.livro}
+                                            style={{
+                                                width: "35px",
+                                                height: "50px",
+                                                objectFit: "cover",
+                                                borderRadius: "4px",
+                                                border: "1px solid #ddd"
+                                            }}
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = `${backendUrl}/uploads/usuarios/default.png`;
+                                            }}
+                                        />
+
+                                        <div className="flex-grow-1">
+                                            <div style={{ fontSize: "0.85rem", fontWeight: "600" }}>
+                                                {livro.livro}
+                                            </div>
+                                            <small className="text-muted">
+                                                {livro.total_reservas} reserva(s)
+                                            </small>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="col-9">
                     <div
@@ -301,7 +379,6 @@ const FuncionarioHome = () => {
                         )}
                     </div>
                 </div>
-
             </div>
             {showModal && (
                 <div style={{
