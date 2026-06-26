@@ -21,7 +21,9 @@ const Livros = () => {
         patrimonio: "",
         total_copias: "",
         copias_disponiveis: "",
-        descricao: ""
+        descricao: "",
+        genero: "",
+        capa: ""
     });
 
     const listaLivros = async () => {
@@ -59,7 +61,10 @@ const Livros = () => {
             autor: "",
             patrimonio: "",
             total_copias: "",
-            copias_disponiveis: ""
+            copias_disponiveis: "",
+            descricao: "",
+            genero: "",
+            capa: ""
         });
         setShowModal(true);
     };
@@ -81,7 +86,7 @@ const Livros = () => {
                 toast.success("Livro atualizado com sucesso!");
             } else {
                 await api.post("/livros", form, {
-                    headers: { Authorization: `Baerer ${token}` }
+                    headers: { Authorization: `Bearer ${token}` }
                 });
                 toast.success("Livro adicionado com sucesso!")
             }
@@ -105,7 +110,7 @@ const Livros = () => {
 
                 toast.success("Livro excluído com sucesso!");
                 listaLivros();
-                
+
             } catch (err) {
                 console.error(err);
                 toast.error("Erro ao salvar livro.");
@@ -155,6 +160,7 @@ const Livros = () => {
                                     <th>ID</th>
                                     <th>Título</th>
                                     <th>Autor</th>
+                                    <th>Gênero</th>
                                     <th>Patrimônio</th>
                                     <th>Total</th>
                                     <th>Disponíveis</th>
@@ -167,6 +173,7 @@ const Livros = () => {
                                         <td>{livro.id}</td>
                                         <td>{livro.titulo}</td>
                                         <td>{livro.autor}</td>
+                                        <td>{livro.genero || "-"}</td>
                                         <td>{livro.patrimonio}</td>
                                         <td>{livro.total_copias}</td>
                                         <td>{livro.copias_disponiveis}</td>
@@ -225,6 +232,26 @@ const Livros = () => {
                                         onChange={(e) =>
                                             setForm({ ...form, autor: e.target.value })
                                         }
+                                    />
+                                    <label className="form-label">Gênero</label>
+                                    <input
+                                        type="text"
+                                        className="form-control mb-3"
+                                        value={form.genero || ""}
+                                        onChange={(e) =>
+                                            setForm({ ...form, genero: e.target.value })
+                                        }
+                                    />
+
+                                    <label className="form-label">URL da capa</label>
+                                    <input
+                                        type="text"
+                                        className="form-control mb-3"
+                                        value={form.capa || ""}
+                                        onChange={(e) =>
+                                            setForm({ ...form, capa: e.target.value })
+                                        }
+                                        placeholder="Cole o link da imagem da capa"
                                     />
                                     <label className="form-label">Patrimônio</label>
                                     <input

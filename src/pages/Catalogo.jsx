@@ -29,7 +29,7 @@ const Catalogo = () => {
     const verDetalhes = async (id) => {
         const token = localStorage.getItem("token");
 
-        if(!token){
+        if (!token) {
             toast.error("Faça login para ver os detalhes do livro.");
             return;
         }
@@ -89,8 +89,24 @@ const Catalogo = () => {
                 >
                     <h3 className="mb-4">Detalhes do Livro</h3>
                     <div className="border rounded p-4 shadow-sm" style={{ background: "#fafafa" }}>
+                        <img
+                            src={detalhes.capa || "https://via.placeholder.com/180x250?text=Sem+Capa"}
+                            alt={detalhes.titulo}
+                            style={{
+                                width: "180px",
+                                height: "250px",
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                                marginBottom: "15px"
+                            }}
+                            onError={(e) => {
+                                e.currentTarget.src = "https://via.placeholder.com/180x250?text=Sem+Capa";
+                            }}
+                        />
                         <h4>{detalhes.titulo}</h4>
                         <p className="text-muted">Autor: {detalhes.autor}</p>
+                        <p className="text-muted"><strong>Gênero: </strong>{detalhes.genero || "Não informado"}</p>
+                        <p className="text-muted"><strong>Gênero: </strong>{detalhes.genero || "Não informado"}</p>
                         <p className="text-muted">
                             <strong>Descrição: </strong>{detalhes.descricao || "Sem descrição"}
                         </p>
@@ -115,7 +131,7 @@ const Catalogo = () => {
                             >
                                 Voltar ao Catálogo
                             </button>
-                            
+
                             <button
                                 className="btn btn-primary"
                                 disabled={detalhes.copias_disponiveis === 0}
@@ -168,8 +184,23 @@ const Catalogo = () => {
                                     onClick={() => verDetalhes(livro.id)}
                                 >
                                     <div>
+                                        <img
+                                            src={livro.capa || "https://via.placeholder.com/180x250?text=Sem+Capa"}
+                                            alt={livro.titulo}
+                                            style={{
+                                                width: "100%",
+                                                height: "220px",
+                                                objectFit: "cover",
+                                                borderRadius: "8px",
+                                                marginBottom: "10px"
+                                            }}
+                                            onError={(e) => {
+                                                e.currentTarget.src = "https://via.placeholder.com/180x250?text=Sem+Capa";
+                                            }}
+                                        />
                                         <h6 className="mb-1">{livro.titulo}</h6>
                                         <p className="text-muted mb-1">Autor: {livro.autor}</p>
+                                        <p className="text-muted"><strong>Gênero: </strong>{livro.genero || "Não informado"}</p>
                                         <small className="text-muted">
                                             Disponíveis:{" "}
                                             <span className={`fw-bold ${livro.copias_disponiveis > 0 ? "text-success" : "text-danger"}`}>

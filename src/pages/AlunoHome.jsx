@@ -245,32 +245,60 @@ const AlunoHome = () => {
                                         className="p-3 rounded border shadow-sm"
                                         style={{ background: "#fafafa" }}
                                     >
-                                        <h6 className="mb-1"><strong>{r.livro || "-"}</strong></h6>
-                                        <p className="mb-0">Autor: {r.autor || "-"}</p>
-                                        <p className="mb-0">
-                                            Status:{" "}
-                                            <span className={`fw-bold ${r.status === "ativa" ? "text-success" : r.status === "finalizada" ? "text-primary" : "text-danger"}`}>
-                                                {r.status || "-"}
-                                            </span>
-                                        </p>
-                                        <small className="text-muted">
-                                            Reservado em: {formatarData(r.data_reserva)}{" "}
-                                            {r.data_devolucao ? `| Devolução: ${formatarData(r.data_devolucao)}` : ""}
-                                        </small>
-                                        {r.status === "ativa" && (
-                                            <div className="mt-3 d-flex gap-2">
-                                                <button className="btn btn-success btn-sm" onClick={() => renovarReserva(r.id)}>
-                                                    🔄 Renovar
-                                                </button>
-                                                <button className="btn btn-danger btn-sm" onClick={() => cancelarReserva(r.id)}>
-                                                    ❌ Cancelar
-                                                </button>
+                                        <div className="d-flex gap-3 align-items-start">
+                                            <img
+                                                src={r.capa || "https://via.placeholder.com/80x110?text=Sem+Capa"}
+                                                alt={r.livro || "Capa do livro"}
+                                                style={{
+                                                    width: "80px",
+                                                    height: "110px",
+                                                    objectFit: "cover",
+                                                    borderRadius: "6px",
+                                                    border: "1px solid #ddd"
+                                                }}
+                                                onError={(e) => {
+                                                    e.currentTarget.src = "https://via.placeholder.com/80x110?text=Sem+Capa";
+                                                }}
+                                            />
 
-                                                <button className="btn btn-primary btn-sm" onClick={() => gerarReciboReserva(r)}>
-                                                    📄 Baixar Recibo
-                                                </button>
+                                            <div className="flex-grow-1">
+                                                <h6 className="mb-1"><strong>{r.livro || "-"}</strong></h6>
+
+                                                <p className="mb-0">Autor: {r.autor || "-"}</p>
+
+                                                {r.genero && (
+                                                    <p className="mb-0">Gênero: {r.genero}</p>
+                                                )}
+
+                                                <p className="mb-0">
+                                                    Status:{" "}
+                                                    <span className={`fw-bold ${r.status === "ativa" ? "text-success" : r.status === "finalizada" ? "text-primary" : "text-danger"}`}>
+                                                        {r.status || "-"}
+                                                    </span>
+                                                </p>
+
+                                                <small className="text-muted">
+                                                    Reservado em: {formatarData(r.data_reserva)}{" "}
+                                                    {r.data_devolucao ? `| Devolução: ${formatarData(r.data_devolucao)}` : ""}
+                                                </small>
+
+                                                {r.status === "ativa" && (
+                                                    <div className="mt-3 d-flex gap-2">
+                                                        <button className="btn btn-success btn-sm" onClick={() => renovarReserva(r.id)}>
+                                                            🔄 Renovar
+                                                        </button>
+
+                                                        <button className="btn btn-danger btn-sm" onClick={() => cancelarReserva(r.id)}>
+                                                            ❌ Cancelar
+                                                        </button>
+
+                                                        <button className="btn btn-primary btn-sm" onClick={() => gerarReciboReserva(r)}>
+                                                            📄 Baixar Recibo
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
