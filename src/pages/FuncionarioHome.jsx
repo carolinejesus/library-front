@@ -260,7 +260,7 @@ const FuncionarioHome = () => {
                                         style={{ background: "#fafafa" }}
                                     >
                                         <span style={{ fontSize: "1.4rem" }}>
-                                            {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "📚"}
+                                            {index === 0 ? "1-" : index === 1 ? "2-" : index === 2 ? "3-" : "📚"}
                                         </span>
 
                                         <img
