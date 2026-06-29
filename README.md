@@ -145,7 +145,7 @@ Além disso, a tela do funcionário possui um relatório visual com o ranking do
 
 ## Observações
 
-Este projeto foi desenvolvido individualmente por Caroline Freitas de Jesus, aproveitando uma base de projeto já existente e realizando melhorias e incrementos para atender aos requisitos da tarefa avaliativa.
+Este projeto foi desenvolvido individualmente por mim, aproveitando uma base de projeto já existente e realizando melhorias e incrementos para atender aos requisitos da tarefa avaliativa.
 
 ## Autora
 
