@@ -58,11 +58,16 @@ const Catalogo = () => {
             return;
         }
 
-        const response = await api.get(`/livros/${id}`, {
-            headers: { Authorization: "Bearer " + token }
-        });
+        try {
+            const response = await api.get(`/livros/${id}`, {
+                headers: { Authorization: "Bearer " + token }
+            });
 
-        setDetalhes(response.data);
+            setDetalhes(response.data);
+        } catch (err) {
+            console.error("Erro ao buscar detalhes do livro:", err);
+            toast.error("Erro ao abrir os detalhes do livro.");
+        }
     };
 
     const reservarLivro = async (idLivro) => {
@@ -78,6 +83,7 @@ const Catalogo = () => {
 
         if (!id_usuario) {
             toast.error(t.userNotFound)
+            return;
         }
 
         const reserva = {
@@ -95,8 +101,8 @@ const Catalogo = () => {
             carregarLivros();
 
         } catch (err) {
-            console.error(err);
-            alert(t.reserveError)
+            const mensagem = err.response?.data?.error || t.reserveError;
+            toast.error(mensagem);
         }
     };
 
