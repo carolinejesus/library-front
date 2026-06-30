@@ -260,7 +260,7 @@ const FuncionarioHome = () => {
                                         style={{ background: "#fafafa" }}
                                     >
                                         <span style={{ fontSize: "1.4rem" }}>
-                                            {index === 0 ? "1-" : index === 1 ? "2-" : index === 2 ? "3-" : "📚"}
+                                            {index === 0 ? "1°-" : index === 1 ? "2°-" : index === 2 ? "3°-" : "-"}
                                         </span>
 
                                         <img
@@ -367,9 +367,12 @@ const FuncionarioHome = () => {
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    <button className="btn btn-danger btn-sm" onClick={() => excluirReserva(r.id)}>
-                                                        🗑 Excluir
-                                                    </button>
+                                                    <div className="d-flex gap-2 mt-3">
+                                                        <button className="btn btn-danger btn-sm" onClick={() => excluirReserva(r.id)}>
+                                                            🗑 Excluir
+                                                        </button>
+                                                    </div>
+
                                                 )}
                                             </div>
                                         </div>
